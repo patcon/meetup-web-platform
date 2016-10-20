@@ -65,7 +65,11 @@ export default function getRoutes(
 		method: 'POST',
 		path: '/ws-api',
 		config: {
-			websocket: true
+			plugins: {
+				websocket: {
+					only: true,
+				},
+			},
 		},
 		handler: (request, reply) => {
 			reply({ foo: 'hullooo' });
