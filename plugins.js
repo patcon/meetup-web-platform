@@ -1,5 +1,5 @@
 import Good from 'good';
-import Nes from 'nes';
+import HapiWebSocket from 'hapi-plugin-websocket';
 import anonAuthPlugin from './plugins/anonAuthPlugin';
 
 /**
@@ -54,7 +54,7 @@ export function getAnonAuthPlugin(options) {
 }
 
 export function getWebsocketPlugin() {
-	return Nes;
+	return HapiWebSocket;
 }
 
 export default function getPlugins(config) {

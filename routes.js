@@ -61,6 +61,16 @@ export default function getRoutes(
 		duotoneUrls: getDuotoneUrls(duotones, PHOTO_SCALER_SALT),
 	});
 
+	const apiWsProxyRoute = {
+		method: 'POST',
+		path: '/ws-api',
+		config: {
+			websocket: true
+		},
+		handler: (request, reply) => {
+			reply({ foo: 'hullooo' });
+		}
+	};
 	/**
 	 * This handler converts the application-supplied queries into external API
 	 * calls, and converts the API call responses into a standard format that
@@ -126,6 +136,7 @@ export default function getRoutes(
 	};
 
 	return [
+		apiWsProxyRoute,
 		apiProxyRoute,
 		applicationRoute,
 	];
