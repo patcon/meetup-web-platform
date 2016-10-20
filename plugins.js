@@ -1,4 +1,5 @@
 import Good from 'good';
+import Nes from 'nes';
 import anonAuthPlugin from './plugins/anonAuthPlugin';
 
 /**
@@ -52,8 +53,13 @@ export function getAnonAuthPlugin(options) {
 	};
 }
 
+export function getWebsocketPlugin() {
+	return Nes;
+}
+
 export default function getPlugins(config) {
 	return [
+		getWebsocketPlugin(),
 		getConsoleLogPlugin(),
 		getAnonAuthPlugin(config),
 	];
