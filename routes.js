@@ -68,11 +68,23 @@ export default function getRoutes(
 			plugins: {
 				websocket: {
 					only: true,
+					connect: (wss, ws) => {
+						// delete default websocket accept-encoding header so that Hapi
+						// will not encode response before delivering to wss
+						delete ws.upgradeReq.headers['accept-encoding'];
+					},
 				},
 			},
 		},
 		handler: (request, reply) => {
-			reply({ foo: 'hullooo' });
+			// const queryResponses$ = proxyApiRequest$(request);
+			// queryResponses$.subscribe(
+				// queryResponses => {
+					// reply(queryResponses);
+				// },
+				// (err) => { reply(Boom.badImplementation(err.message)); }
+			// );
+			reply({ x: 'y' });
 		}
 	};
 	/**
