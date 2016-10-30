@@ -247,7 +247,9 @@ export const getApiRequester = ({ API_TIMEOUT=5000, baseUrl, duotoneUrls }) =>
 			request.log(['api'], JSON.stringify(requestOpts.url));  // log the request that will be made
 			return request$
 				.map(parseApiResponse)             // parse into plain object
-				.catch(error => Rx.Observable.of({ error: error.message }))
+				.catch(error =>
+					Rx.Observable.of({ error: error.message })
+				)
 				.map(apiResponseToQueryResponse(query))    // convert apiResponse to app-ready queryResponse
 				.map(setApiResponseDuotones);        // special duotone prop
 		};
