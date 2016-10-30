@@ -129,16 +129,20 @@ export const apiResponseToQueryResponse = query => response => ({
 	}
 });
 
+export function parseRequestQueries(request) {
+	const { query, payload } = request;
+	const queriesJSON = request.method === 'get' ? query.queries : payload.queries;
+	return JSON.parse(queriesJSON);
+}
+
 /**
  * Parse request for queries and request options
  * @return {Object} { queries, externalRequestOpts }
  */
-export function parseRequest(request, baseUrl) {
+export function parseRequestOpts(request, baseUrl) {
 	const {
 		headers,
 		method,
-		query,
-		payload,
 	} = request;
 
 	const externalRequestOpts = {
@@ -159,9 +163,7 @@ export function parseRequest(request, baseUrl) {
 	delete externalRequestOpts.headers['accept-encoding'];
 	delete externalRequestOpts.headers['content-length'];  // original request content-length is irrelevant
 
-	const queriesJSON = request.method === 'get' ? query.queries : payload.queries;
-	const queries = JSON.parse(queriesJSON);
-	return { queries, externalRequestOpts };
+	return externalRequestOpts;
 }
 
 /**
@@ -223,31 +225,33 @@ const makeMockRequest = (requestOpts, mockResponse) =>
 	Rx.Observable.of(JSON.stringify(mockResponse))
 		.do(() => console.log(`MOCKING response to ${requestOpts.url}`));
 
-export const makeApiRequest$ = (request, API_TIMEOUT, duotoneUrls) => {
-	const setApiResponseDuotones = apiResponseDuotoneSetter(duotoneUrls);
-	const makeExternalApiRequest$ = requestOpts =>
-		externalRequest$(requestOpts)
-			.timeout(API_TIMEOUT, new Error('API response timeout'))
-			.do(([response]) => request.log(['api'], `${response.elapsedTime}ms - ${response.request.uri.path}`)) // log api response time
-			.map(([response, body]) => body);    // ignore Response object, just process body string
+export const getApiRequester = ({ API_TIMEOUT=5000, baseUrl, duotoneUrls }) =>
+	request => {
+		const externalRequestOpts = parseRequestOpts(request, baseUrl);
+		const apiConfigToRequestOptions = buildRequestArgs(externalRequestOpts);
 
-	return ([requestOpts, query]) => {
-		const request$ = query.mockResponse ?
-			makeMockRequest(requestOpts, query.mockResponse) :
-			makeExternalApiRequest$(requestOpts);
+		const setApiResponseDuotones = apiResponseDuotoneSetter(duotoneUrls);
+		const makeExternalApiRequest$ = requestOpts =>
+			externalRequest$(requestOpts)
+				.timeout(API_TIMEOUT, new Error('API response timeout'))
+				.do(([response]) => request.log(['api'], `${response.elapsedTime}ms - ${response.request.uri.path}`)) // log api response time
+				.map(([response, body]) => body);    // ignore Response object, just process body string
 
-		return request$
-			.map(parseApiResponse)             // parse into plain object
-			.catch(error =>
-				Rx.Observable.of({ error: error.message })
-			)
-			.map(apiResponseToQueryResponse(query))    // convert apiResponse to app-ready queryResponse
-			.map(setApiResponseDuotones);        // special duotone prop
+		return query => {
+			const apiConfig = queryToApiConfig(query);
+			const requestOpts = apiConfigToRequestOptions(apiConfig);
+			const request$ = query.mockResponse ?
+				makeMockRequest(requestOpts, query.mockResponse) :
+				makeExternalApiRequest$(requestOpts);
+
+			request.log(['api'], JSON.stringify(requestOpts.url));  // log the request that will be made
+			return request$
+				.map(parseApiResponse)             // parse into plain object
+				.catch(error => Rx.Observable.of({ error: error.message }))
+				.map(apiResponseToQueryResponse(query))    // convert apiResponse to app-ready queryResponse
+				.map(setApiResponseDuotones);        // special duotone prop
+		};
 	};
-};
-
-const sortResponsesByQueryOrder = queries => responses =>
-	queries.map(({ ref }) => responses.find(response => response[ref]));
 
 /**
  * This function transforms a single request to the application server into a
@@ -264,25 +268,14 @@ const sortResponsesByQueryOrder = queries => responses =>
  * @param {Object} baseUrl API server base URL for all API requests
  * @return Array$ contains all API responses corresponding to the provided queries
  */
-const apiProxy$ = ({ API_TIMEOUT=5000, baseUrl, duotoneUrls }) => {
+const apiProxy$ = apiRequestOpts => {
+	const makeApiRequest$ = getApiRequester(apiRequestOpts);
 
 	return request => {
+		const requests = parseRequestQueries(request)
+			.map(makeApiRequest$(request, apiRequestOpts));
 
-		// 1. get the queries and the 'universal' `externalRequestOpts` from the request
-		const { queries, externalRequestOpts } = parseRequest(request, baseUrl);
-
-		// 2. curry a function that uses `externalRequestOpts` as a base from which
-		// to build the query-specific API request options object
-		const apiConfigToRequestOptions = buildRequestArgs(externalRequestOpts);
-
-		return Rx.Observable.from(queries)    // create stream of query objects - fan-out
-			.map(queryToApiConfig)              // convert query to API-specific config
-			.map(apiConfigToRequestOptions)     // API-specific args for api request
-			.do(({ url }) => request.log(['api'], JSON.stringify(url)))  // logging
-			.zip(Rx.Observable.from(queries))   // zip the apiResponse with corresponding query
-			.mergeMap(makeApiRequest$(request, API_TIMEOUT, duotoneUrls))  // parallel requests
-			.toArray()                         // group all responses into a single array - fan-in
-			.map(sortResponsesByQueryOrder(queries));
+		return Rx.Observable.zip(...requests);
 	};
 };
 
