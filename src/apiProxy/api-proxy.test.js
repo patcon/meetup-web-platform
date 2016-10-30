@@ -10,17 +10,17 @@ import {
 	MOCK_GROUP,
 } from '../util/mocks/api';
 import {
-	parseRequest,
+	parseRequestQueries,
 	parseApiResponse,
 	queryToApiConfig,
 	buildRequestArgs,
 	apiResponseToQueryResponse,
 	apiResponseDuotoneSetter,
 	groupDuotoneSetter,
-	makeApiRequest$,
+	getApiRequester,
 } from './api-proxy';
 
-describe('parseRequest', () => {
+describe('parseRequestQueries', () => {
 	it('extracts the queries provided in GET and POST requests', () => {
 		const headers = { authorization: MOCK_AUTH_HEADER };
 		const queries = [mockQuery(MOCK_RENDERPROPS)];
@@ -36,8 +36,8 @@ describe('parseRequest', () => {
 			payload: data,
 		};
 
-		expect(parseRequest(getRequest, 'http://dummy.api.meetup.com').queries).toEqual(queries);
-		expect(parseRequest(postRequest, 'http://dummy.api.meetup.com').queries).toEqual(queries);
+		expect(parseRequestQueries(getRequest, 'http://dummy.api.meetup.com')).toEqual(queries);
+		expect(parseRequestQueries(postRequest, 'http://dummy.api.meetup.com')).toEqual(queries);
 	});
 });
 
@@ -167,7 +167,7 @@ describe('apiResponseDuotoneSetter', () => {
 	});
 });
 
-describe('makeApiRequest$', () => {
+describe('getApiRequester', () => {
 	it('responds with query.mockResponse when set', () => {
 		const mockResponse = { foo: 'bar' };
 		const query = { ...mockQuery(MOCK_RENDERPROPS), mockResponse };
@@ -177,7 +177,12 @@ describe('makeApiRequest$', () => {
 				value: mockResponse,
 			}
 		};
-		return makeApiRequest$({ log: () => {} }, 5000, {})([{ url: '/foo' }, query])
+		const makeApiRequest$ = getApiRequester({
+			API_TIMEOUT: 5000,
+			baseUrl: '',
+			duotoneUrls: {}
+		});
+		return makeApiRequest$({ log: () => {} })(query)
 			.toPromise()
 			.then(response => expect(response).toEqual(expectedResponse));
 	});
