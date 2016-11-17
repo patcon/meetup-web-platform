@@ -37,21 +37,23 @@ export function group(params) {
  * 	`apiMethod: 'suggested_members' - return suggested_members for a given conversation id
  */
 export function mugcomm(params) {
-	const { urlname, conversationId, apiMethod } = params;
+	const { chapterUrlName, conversationId, apiMethod } = params;
 
 	const endpoint = [
-		urlname,
-		'conversations',
+		chapterUrlName,
+		'communications',
 		conversationId,
 		apiMethod
 	]
 		.filter(urlFragment => urlFragment) // only inlcude populated fragments
 		.join('/');
 
+    console.log('NATHAN LOG ENDPOINT: ${endpoint}');
+
 	return {
 		endpoint,
 		params
-	}
+	};
 }
 
 /**
