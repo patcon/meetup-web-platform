@@ -89,3 +89,11 @@ export function login(params) {
 	};
 }
 
+export function niko(params) {
+	const urlname = 'Baller-Lunch';
+	const pathExtension = '/225959044';
+	return {
+		endpoint: `${urlname}/events${pathExtension}`,
+		params
+	};
+}
