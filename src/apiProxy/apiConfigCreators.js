@@ -48,12 +48,18 @@ export function groupCommunication(params) {
 		conversationId,
 		apiMethod
 	]
-		.filter(urlFragment => urlFragment) // only inlcude populated fragments
+		.filter(urlFragment => urlFragment) // only include populated fragments
 		.join('/');
 
+	const convoParams = {
+		chapterUrlName: urlname,
+		conversationId
+	};
+
+	console.log('YOOOOO....', endpoint, convoParams);
 	return {
 		endpoint,
-		params
+		params: convoParams
 	}
 }
 
