@@ -43,23 +43,17 @@ export function groupCommunication(params) {
 	const { urlname, conversationId, apiMethod } = params;
 
 	const endpoint = [
-		urlname,
-		'communications',
-		conversationId,
-		apiMethod
-	]
+			urlname,
+			'communications',
+			conversationId,
+			apiMethod
+		]
 		.filter(urlFragment => urlFragment) // only include populated fragments
 		.join('/');
 
-	const convoParams = {
-		chapterUrlName: urlname,
-		conversationId
-	};
-
-	console.log('YOOOOO....', endpoint, convoParams);
 	return {
 		endpoint,
-		params: convoParams
+		params
 	}
 }
 
