@@ -31,34 +31,6 @@ export function group(params) {
 }
 
 /**
- * group communication endpoints
- *
- * accepts an `apiMethod` property in params:
- * 	`apiMethod: 'followers' - return followers for a given conversation id
- * 	`apiMethod: 'suggested_members' - return suggested_members for a given conversation id
- * 	`apiMethod: 'invite' - POST invitation
- * 	`apiMethod: 'follow' - POST follow
- * 	`apiMethod: 'unfollow' - POST unfollow
- */
-export function groupCommunication(params) {
-	const { urlname, conversationId, apiMethod } = params;
-
-	const endpoint = [
-		urlname,
-		'communications',
-		conversationId,
-		apiMethod
-	]
-		.filter(urlFragment => urlFragment) // only inlcude populated fragments
-		.join('/');
-
-	return {
-		endpoint,
-		params
-	};
-}
-
-/**
  * all the endpoints that return event objects
  */
 export function event(params) {
