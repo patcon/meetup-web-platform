@@ -68,6 +68,24 @@ describe('General server startup tests', () => {
 				});
 			});
 	});
+	it('calls the handler for /ping', () => {
+		return start({}, {}, mockConfig)
+			.then(server => {
+				const request = {
+					method: 'get',
+					url: '/ping',
+					credentials: 'whatever',
+				};
+				return server.inject(request).then(
+					response => expect(response.payload).toEqual('pong!')
+				)
+				.then(() => server.stop())
+				.catch(err => {
+					server.stop();
+					throw err;
+				});
+			});
+	});
 	it('calls the handler for /{*wild}', () => {
 		const spyable = {
 			handler: (request, reply) => reply('okay'),

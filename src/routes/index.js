@@ -5,6 +5,12 @@ import apiProxy$ from '../apiProxy/api-proxy';
 import getApiProxyRoutes from '../apiProxy/apiProxyRoutes';
 import getApplicationRoute from './appRoute';
 
+export const pingRoute = {
+	path: '/ping',
+	method: 'GET',
+	handler: (request, reply) => reply('pong!'),
+};
+
 export default function getRoutes(renderRequestMap, env, apiProxyFn$ = apiProxy$) {
 
 	console.log(
@@ -12,6 +18,7 @@ export default function getRoutes(renderRequestMap, env, apiProxyFn$ = apiProxy$
 	);
 
 	return [
+		pingRoute,
 		...getApiProxyRoutes('/mu_api', env, apiProxyFn$),
 		getApplicationRoute(renderRequestMap),
 	];
