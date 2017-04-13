@@ -308,7 +308,6 @@ describe('apiResponseToQueryResponse', () => {
 	beforeEach(function() {
 		this.refs = ['foo', 'bar'];
 		this.queries = this.refs.map(ref => ({ ref }));
-		// mock api response is just a map of refs to empty objects
 		this.MOCK_API_RESPONSES = this.refs.map(ref => ({ ref }));
 	});
 
@@ -316,8 +315,7 @@ describe('apiResponseToQueryResponse', () => {
 		this.MOCK_API_RESPONSES
 			.map((apiResponse, i) => apiResponseToQueryResponse(this.queries[i])(apiResponse))
 			.forEach((queryResponse, i)=> {
-				expect(queryResponse).toEqual(jasmine.any(Object));
-				expect(queryResponse[this.refs[i]]).toEqual(jasmine.any(Object));
+				expect(queryResponse).toEqual(expect.objectContaining({ ref: this.queries[i].ref }));
 			});
 	});
 });
@@ -338,13 +336,12 @@ describe('apiResponseDuotoneSetter', () => {
 		const { ref, type } = mockQuery({});
 		expect(group.duotoneUrl).toBeUndefined();
 		const groupApiResponse = {
-			[ref]: {
-				type,
-				value: group
-			}
+			ref,
+			type,
+			value: group
 		};
 		const modifiedResponse = apiResponseDuotoneSetter(MOCK_DUOTONE_URLS)(groupApiResponse);
-		const { duotoneUrl } = modifiedResponse[ref].value;
+		const { duotoneUrl } = modifiedResponse.value;
 		const expectedUrl = MOCK_DUOTONE_URLS.dtaxb;
 		expect(duotoneUrl.startsWith(expectedUrl)).toBe(true);
 	});
@@ -354,16 +351,15 @@ describe('apiResponseDuotoneSetter', () => {
 		const group = { ...MOCK_GROUP };
 		expect(group.duotoneUrl).toBeUndefined();
 		const homeApiResponse = {
-			memberHome: {
-				type: 'home',
-				value: {
-					rows: [{
-						items: [{
-							type: 'group',
-							group
-						}],
-					}]
-				}
+			ref: 'memberHome',
+			type: 'home',
+			value: {
+				rows: [{
+					items: [{
+						type: 'group',
+						group
+					}],
+				}]
 			}
 		};
 		// run the function - rely on side effect in group
@@ -374,22 +370,20 @@ describe('apiResponseDuotoneSetter', () => {
 	it('returns object unmodified when it doesn\'t need duotones', () => {
 		const member = { ...MOCK_MEMBER };
 		const memberResponse = {
-			self: {
-				type: 'member',
-				value: member,
-			}
+			ref: 'self',
+			type: 'member',
+			value: member,
 		};
 		apiResponseDuotoneSetter(MOCK_DUOTONE_URLS)(memberResponse);
 		expect(member).toEqual(MOCK_MEMBER);
 	});
 	it('returns object unmodified when it contains errors', () => {
 		const errorResponse = {
-			self: {
-				type: 'member',
-				value: {
-					error: new Error(),
-				},
-			}
+			ref: 'self',
+			type: 'member',
+			value: {
+				error: new Error(),
+			},
 		};
 		const errorExpectedResponse = { ...errorResponse };
 		apiResponseDuotoneSetter(MOCK_DUOTONE_URLS)(errorResponse);

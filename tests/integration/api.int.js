@@ -52,13 +52,12 @@ describe('API proxy endpoint integration tests', () => {
 	it('returns a formatted array of responses from GET /mu_api', () => {
 		const expectedResponse = JSON.stringify({
 			responses: [{
-				foo: {
-					type: 'foo',
-					value: {},  // from the mocked `request` module
-					meta: {
-						endpoint: '/foo',
-					},
-				}
+				ref: 'foo',
+				type: 'foo',
+				value: {},  // from the mocked `request` module
+				meta: {
+					endpoint: '/foo',
+				},
 			}],
 		});
 		const queries = rison.encode_array([{

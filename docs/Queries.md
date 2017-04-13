@@ -11,6 +11,8 @@ feature flag requests.
 
 ## Spec
 
+### Query
+
 A Query is just a plain object with the following shape:
 
 ```js
@@ -26,13 +28,13 @@ A Query is just a plain object with the following shape:
 }
 ```
 
-### `ref`
+#### `ref`
 
 A unique string reference to the query. The `ref` is used to uniquely identify
 the query _and_ uniquely assign the resulting API data to Redux state at
 `state.app[ref]`.
 
-### `type`
+#### `type`
 
 A one-word description of the 'data type' expected to be returned by the API
 for this query. This information is used on the server to further process the
@@ -50,25 +52,25 @@ array or a singleton.
 - `comment`
 - feature-specific objects like `home`, `conversations`
 
-### `endpoint`
+#### `endpoint`
 
 The Meetup API endpoint as a URL pathname, e.g. `/members/123456`. Note that
 this URL should not include any parameter placeholders like `/:urlname` - the
 values should be filled in as needed.
 
-### `params`
+#### `params`
 
 The parameters that should be passed to the API either in the querystring (for
 GET requests) or the request body (for POST requests).
 
-### `flags`
+#### `flags`
 
 An array of feature flag (Runtime Flag) names that should be returned
 alongside the main request.
 
-### `meta`
+#### `meta`
 
-#### `method`
+##### `method`
 
 You can force the query to be sent with a particular HTTP method by specifying
 it here as a string: `get`, `post`, `delete`, or `patch`. Note that
@@ -104,6 +106,20 @@ const deleteQuery = {
 store.dispatch(apiRequest([deleteQuery]));  // note that `apiRequest` takes an _array_ arg
 ```
 
+### Query Response
+
+A query response is also a plain object
+
+```js
+{
+  ref: string,
+  value: any,
+  type?: string,
+  flags?: array,
+  meta?: object,
+}
+```
+
 ## Usage
 
 ### Query lifecycle.
@@ -137,19 +153,16 @@ store.dispatch(apiRequest([deleteQuery]));  // note that `apiRequest` takes an _
 
 **API response array returned as JSON from app server**
 
-The app server API endpoint will respond with an array of API responses
-structured as individual objects with a single key corresponding to the query
-`ref`.
+The app server API endpoint will respond with an array of Query Response objects
 
 ```js
 [
-  {
-    [ref]: {
-      type,
-      value: {},
-      flags,
-      meta  // data returned from API separate from `value`
-    }
+  {  // query response
+    ref: string,
+    value: any,
+    type?: string,
+    flags?: array,
+    meta?: object,
   },
   // ...
 ]
@@ -160,10 +173,10 @@ structured as individual objects with a single key corresponding to the query
 ```js
 {
   [ref]: {
-    type,
     value: {},
-    flags,
-    meta
+    type?,
+    flags?,
+    meta?,
   },
   // ...
 }

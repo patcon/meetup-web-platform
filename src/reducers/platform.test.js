@@ -22,13 +22,13 @@ describe('app reducer', () => {
 		const API_SUCCESS = {
 			type: 'API_SUCCESS',
 			payload: {
-				responses: [{ foo: 'bar'}, { bar: 'baz' }, { baz: 'foo' }],
+				responses: [{ ref: 'foo', value: 'bar' }, { ref: 'bar', value: 'baz' }, { ref: 'baz', value: 'foo' }],
 			},
 		};
 		expect(app(undefined, API_SUCCESS)).toEqual({
-			foo: 'bar',
-			bar: 'baz',
-			baz: 'foo',
+			foo: { value: 'bar' },
+			bar: { value: 'baz' },
+			baz: { value: 'foo' },
 			isFetching: false,
 		});
 	});

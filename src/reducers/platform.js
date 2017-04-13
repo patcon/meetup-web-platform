@@ -33,7 +33,11 @@ export function app(state=DEFAULT_APP_STATE, action={}) {
 	case 'CACHE_SUCCESS':
 		// {API|CACHE}_SUCCESS contains an array of responses, but we just need to build a single
 		// object to update state with
-		newState = action.payload.responses.reduce((s, r) => ({ ...s, ...r }), {});
+		newState = action.payload.responses.reduce((newState, response) => {
+			const { ref, ...data } = response;
+			newState[ref] = data;
+			return newState;
+		}, {});
 		delete state.error;
 		return { ...state, ...newState };
 	case 'API_ERROR':

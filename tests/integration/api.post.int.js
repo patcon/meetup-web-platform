@@ -75,13 +75,12 @@ describe('API proxy POST endpoint integration tests', () => {
 	it('returns a formatted array of responses from POST /mu_api', () => {
 		const expectedResponse = JSON.stringify({
 			responses: [{
-				[mockQuery.ref]: {
-					type: mockQuery.type,
-					value: {},  // from the mocked `request` module
-					meta: {
-						endpoint: '/foo',
-					},
-				}
+				ref: mockQuery.ref,
+				type: mockQuery.type,
+				value: {},  // from the mocked `request` module
+				meta: {
+					endpoint: '/foo',
+				},
 			}],
 		});
 		const test = response => expect(response.payload).toEqual(expectedResponse);

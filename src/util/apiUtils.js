@@ -235,11 +235,10 @@ export const buildRequestArgs = externalRequestOpts =>
  * @param {Object} apiResponse JSON-parsed api response data
  */
 export const apiResponseToQueryResponse = query => ({ value, meta }) => ({
-	[query.ref]: {
-		type: query.type,
-		value,
-		meta
-	}
+	ref: query.ref,
+	type: query.type,
+	value,
+	meta
 });
 
 export function getAuthHeaders(request) {
@@ -387,26 +386,23 @@ export const apiResponseDuotoneSetter = duotoneUrls => {
 	const setGroupDuotone = groupDuotoneSetter(duotoneUrls);
 	return queryResponse => {
 		// inject duotone URLs into any group query response
-		Object.keys(queryResponse)
-			.forEach(key => {
-				const { type, value } = queryResponse[key];
-				if (!value || value.error) {
-					return;
-				}
-				let groups;
-				switch (type) {
-				case 'group':
-					groups = value instanceof Array ? value : [value];
-					groups.forEach(setGroupDuotone);
-					break;
-				case 'home':
-					(value.rows || []).map(({ items }) => items)
-						.forEach(items => items.filter(({ type }) => type === 'group')
-							.forEach(({ group }) => setGroupDuotone(group))
-						);
-					break;
-				}
-			});
+		const { type, value } = queryResponse;
+		if (!value || value.error) {
+			return;
+		}
+		let groups;
+		switch (type) {
+		case 'group':
+			groups = value instanceof Array ? value : [value];
+			groups.forEach(setGroupDuotone);
+			break;
+		case 'home':
+			(value.rows || []).map(({ items }) => items)
+				.forEach(items => items.filter(({ type }) => type === 'group')
+					.forEach(({ group }) => setGroupDuotone(group))
+				);
+			break;
+		}
 		return queryResponse;
 	};
 };
