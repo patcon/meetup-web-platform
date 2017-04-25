@@ -11,12 +11,12 @@
     import {
       getInitialState,
       getBrowserCreateStore
-    } from '../util/createStoreBrowser';
+    } from 'meetup-web-platform/lib/util/createStoreBrowser';
 
     const routes = ...;
     const reducer = ...;
     const middleware = ... || [];
-    const basename = ... || '';
+    const basename = window.APP_RUNTIME.baseUrl || '';
 
     const createStore = getBrowserCreateStore(routes, middleware, basename);
     const store = createStore(reducer, getInitialState(window.APP_RUNTIME));
