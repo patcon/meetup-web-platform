@@ -17,7 +17,7 @@ export function setCsrfCookies(request, reply) {
 }
 
 /**
- * The CSRF plugin we use - 'electrode-csrf-jwt' compares a cookie token to a
+ * The CSRF plugin we use, 'electrode-csrf-jwt', compares a cookie token to a
  * header token in non-GET requests. By default, it will set the cookie token
  * itself ('x-csrf-jwt'), and supply the corresponding header token in a custom
  * header (also 'x-csrf-jwt'). However, we update this flow to also supply the
