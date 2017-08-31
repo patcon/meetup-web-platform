@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getTrackActivity records the expected object 1`] = `
+Object {
+  "agent": "test user agent",
+  "apiRequests": Array [],
+  "browserId": "test-v4-uuid",
+  "description": "nav",
+  "ip": "",
+  "isUserActivity": true,
+  "memberId": 1337,
+  "mobileWeb": false,
+  "platform": "WEB",
+  "platformAgent": "MUP_WEB",
+  "referer": "/referrer",
+  "requestId": "test-request-id-1234",
+  "timestamp": "2017-08-31T17:53:40.537Z",
+  "trackId": "test-v4-uuid",
+  "trax": Object {},
+  "url": "/mu_api",
+}
+`;

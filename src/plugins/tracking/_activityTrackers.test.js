@@ -1,12 +1,12 @@
 import { getLogger } from './activity';
-import { getTrackApi, getTrackApiResponses } from './_activityTrackers';
+import { getTrackActivity, getTrackApiResponses } from './_activityTrackers';
 jest.mock('uuid', () => {
 	return {
 		v4: () => 'test-v4-uuid',
 	};
 });
 
-describe('getTrackApi', () => {
+describe('getTrackActivity', () => {
 	it('records the expected object', () => {
 		const logger = getLogger('MUP_WEB');
 		const trackOpts = {
@@ -36,9 +36,9 @@ describe('getTrackApi', () => {
 			},
 		};
 		request.trackApiResponses = getTrackApiResponses(trackOpts)(request);
-		const trackActivity = getTrackApi(trackOpts);
+		const trackActivity = getTrackActivity(trackOpts);
 		const trackRequestActivity = trackActivity(request);
 		const queryResponses = [];
-		expect(trackRequestActivity(queryResponses)).toBe(true);
+		expect(trackRequestActivity(queryResponses)).toMatchSnapshot();
 	});
 });
