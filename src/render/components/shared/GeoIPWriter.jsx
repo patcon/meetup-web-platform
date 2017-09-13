@@ -15,10 +15,10 @@ class GeoIPWriter extends React.Component {
 	componentDidMount() {
 		const { search } = this.props.location;
 		if (search) {
-			const params = new URLSearchParams(search);
-			const set_geoip = params.get('set_geoip');
-			if (set_geoip) {
-				JSCookie.set('geoip', set_geoip); // make it permanent
+			const searchParams = new URLSearchParams(search);
+			const geoip = searchParams.get('set_geoip');
+			if (geoip) {
+				JSCookie.set('geoip', geoip); // make it permanent
 			}
 		}
 	}
