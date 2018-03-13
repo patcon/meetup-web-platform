@@ -1,3 +1,4 @@
+// @flow
 import { createEpicMiddleware, combineEpics } from './redux-promise-epic';
 
 import getSyncEpic from './sync';
@@ -18,21 +19,27 @@ export {
 } from './sync/apiActionCreators';
 export { api, app, DEFAULT_API_STATE } from './reducer';
 
+type ApiMiddlewareOpts = {
+	noCache: boolean,
+};
 /**
  * The middleware is exported as a getter because it needs the application's
  * routes in order to set up the nav-related epic(s) that are part of the
  * final middleware
- *
- * **Note** it's unlikely that the server needs any epics other than `sync` in
- * order to render the application. We may want to write a server-specific
- * middleware that doesn't include the other epics if performance is an issue
  */
-export const getApiMiddleware = (resolveRoutes, fetchQueriesFn) =>
-	createEpicMiddleware(
-		combineEpics(
-			getCacheEpic(),
-			getSyncEpic(resolveRoutes, fetchQueriesFn),
-			postEpic, // DEPRECATED
-			deleteEpic // DEPRECATED
-		)
-	);
+export const getApiMiddleware = (
+	resolveRoutes: RouteResolver,
+	fetchQueriesFn: QueryFetcher,
+	opts: ApiMiddlewareOpts = {}
+) => {
+	const epics = [
+		getSyncEpic(resolveRoutes, fetchQueriesFn),
+		postEpic, // DEPRECATED
+		deleteEpic, // DEPRECATED
+	];
+	if (!opts.noCache) {
+		epics.push(getCacheEpic());
+	}
+
+	createEpicMiddleware(combineEpics(...epics));
+};

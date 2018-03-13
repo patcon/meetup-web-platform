@@ -21,7 +21,9 @@ export function getServerCreateStore(resolveRoutes, middleware, request) {
 				...request.raw,
 			})
 		),
-		getApiMiddleware(resolveRoutes, getFetchQueries(request)),
+		getApiMiddleware(resolveRoutes, getFetchQueries(request), {
+			noCache: true,
+		}),
 		...middleware,
 	];
 

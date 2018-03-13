@@ -136,3 +136,5 @@ declare type CookieOpts = {
 	isSecure?: boolean,
 	encoding?: string,
 };
+
+declare type RouteResolver = (location: URL): Promise<Array<MatchedRoute>>;

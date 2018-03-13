@@ -116,7 +116,7 @@ const _resolveRouteMatches = (
 export const getRouteResolver = (
 	routes: Array<PlatformRoute>,
 	basename: string
-) => (location: URL): Promise<Array<MatchedRoute>> => {
+): RouteResolver => (location: URL) => {
 	const path = location.pathname.replace(basename, '');
 	return _resolveRouteMatches(routes, path);
 };

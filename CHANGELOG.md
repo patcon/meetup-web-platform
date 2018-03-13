@@ -1,3 +1,7 @@
+## [12.4]
+- **Refactored** server store no longer uses cache middleware - simpler data flow,
+  smaller memory footprint
+
 ## [12.3]
 
 - **New feature** `SEOHead` a component for rendering SEO content in the document head. Also adds related utils under `src/util/seo`. [WP-532](https://meetup.atlassian.net/browse/WP-532)

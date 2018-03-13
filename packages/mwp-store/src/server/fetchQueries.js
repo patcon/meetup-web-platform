@@ -14,9 +14,9 @@ const getCookieMember = memberCookie => {
  * on the server, we can proxy the API requests directly without making a
  * request to the server's own API proxy endpoint
  */
-export default (request: HapiRequest) => () => (
+export default (request: HapiRequest) => (): QueryFetcher => (
 	queries: Array<Query>
-): Promise<ParsedQueryResponses> => {
+) => {
 	const member = getCookieMember(
 		request.state[isProd ? 'MEETUP_MEMBER' : 'MEETUP_MEMBER_DEV']
 	);
