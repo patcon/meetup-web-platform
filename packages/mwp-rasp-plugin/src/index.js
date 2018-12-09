@@ -6,7 +6,7 @@ import Sigsci from './sigsci';
 export function register(server: HapiServer, options: ?{ [string]: string }) {
 	const sigsci = new Sigsci({
 		path: '/var/run/sigsci.sock',
-		...options,
+		...(options || {}),
 	});
 
 	server.ext('onRequest', sigsci.hapi());

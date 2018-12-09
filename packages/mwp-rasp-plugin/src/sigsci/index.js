@@ -565,7 +565,7 @@ Sigsci.prototype.middlewareHapi = function(request, h) {
 			util.format('PreRequestHapi connection error ' + JSON.stringify(err)) // eslint-disable-line
 		);
 		client.destroy(); // kill client after server's response
-		return h.continue;
+		// return h.continue;
 	});
 
 	client.on('timeout', function(err) {
@@ -579,7 +579,7 @@ Sigsci.prototype.middlewareHapi = function(request, h) {
 			)
 		);
 		client.destroy(); // kill client after server's response
-		return h.continue;
+		// return h.continue;
 	});
 
 	// Add a 'close' event handler for the client socket
